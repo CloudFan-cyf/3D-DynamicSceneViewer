@@ -1,0 +1,22 @@
+.App {
+  text-align: center;
+  height: 100vh;  /* 使用视窗高度，让应用占满整个可视区域 */
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 50px;  /* 减小 header 的高度 */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* 标题靠左显示 */
+  color: white;
+  padding: 10px; /* 添加一些内边距 */
+  font-size: small; /* 调整字体大小 */
+}
+
+/* 添加适用于 ModelViewer 的样式 */
+.ModelViewer {
+  height: calc(100vh - 60px); /* 减去 header 的高度，填充剩余空间 */
+  width: 100vw; /* 视窗宽度 */
+  overflow: hidden; /* 避免内容溢出 */
+}
