@@ -14,6 +14,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 function loadComplexOBJ(url, position, rotation, scene, materialsMap) {
     return new Promise((resolve, reject) => {
         const loader = new OBJLoader();
+        
         loader.load(url, (object) => {
             const geometries = [];
             object.traverse(function (child) {

@@ -3,17 +3,17 @@ import * as THREE from 'three'
 import loadOBJ from './loadOBJ';
 import loadGltf from './loadGltf';
 import loadComplexOBJ from './loadComplexOBJ';
-import createMaterials from '../three/createMaterials';
+//import createMaterials from '../three/createMaterials';
 import MODELS_DATA from './modelList';
 
 class LoadManager {
-    constructor(scene) {
+    constructor(scene,materials) {
         this.scene = scene;
-        this.materials = new createMaterials();
+        this.materials = materials;
         this.models = MODELS_DATA; // 使用外部定义的模型数据
     }
 
-    loadModels() {
+    async loadModels() {
         return Promise.all(this.models.flatMap(model => {
             if (!model.enable) {
                 return []; // 如果模型不需要被加载，跳过

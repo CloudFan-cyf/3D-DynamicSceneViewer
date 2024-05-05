@@ -13,6 +13,15 @@ const MODELS_DATA = [
         
     },
     {
+        type: 'gltf',
+        name: 'bicycle',
+        url: '/sceneModels/bike/bike.gltf',
+        enable: true,
+        instances: [
+            { position: { x: 15, y: 0, z: 0 }, rotation: { x: Math.PI * -.5, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } },
+        ],
+    },
+    {
         type: 'obj',
         name: 'roadForPeople',
         url: '/sceneModels/roadForPeople.obj',

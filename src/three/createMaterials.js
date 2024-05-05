@@ -7,28 +7,23 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
  * @param {function} onLoad 可选的加载成功后的回调函数
  * @returns {THREE.Texture} 纹理对象
  */
-function loadTexture(path, onLoad) {
+function loadTexture(path) {
     const loader = new THREE.TextureLoader();
-    return loader.load(
-        path,
-        function (texture) {
-            // 当纹理加载完成后调用
-            texture.wrapS = THREE.RepeatWrapping;  // 设置水平方向上纹理重复
-            texture.wrapT = THREE.RepeatWrapping;  // 设置垂直方向上纹理重复
-            texture.repeat.set(1, 1);  // 根据模型的实际尺寸来调整重复次数
+    return new Promise((resolve, reject) => {
+        loader.load(path, (texture) => {
+            // 成功加载纹理后的处理
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(1, 1);
             texture.minFilter = THREE.LinearFilter;
             texture.magFilter = THREE.LinearFilter;
-
-            if (onLoad) {
-                onLoad(texture);
-            }
-        },
-        undefined,  // onProgress 可选
-        function (error) {  // onError 回调
-            console.error('Error loading texture:', path, error.message);
-        }
-    );
+            resolve(texture);
+        }, undefined, (error) => {
+            reject(error);
+        });
+    });
 }
+
 
 
 /**
@@ -36,7 +31,7 @@ function loadTexture(path, onLoad) {
  * @param {object} options 包含纹理路径的对象
  * @returns {THREE.MeshStandardMaterial} 材质
  */
-function createComplexMaterial(options) {
+async function createComplexMaterial(options) {
     const {
         diffuse = '',
         normal = '',
@@ -46,24 +41,21 @@ function createComplexMaterial(options) {
     } = options;
 
     const material = new THREE.MeshStandardMaterial({
-        map: loadTexture(diffuse),
-        normalMap: loadTexture(normal),
-        aoMap: loadTexture(ao),
-        roughnessMap: loadTexture(rough),
-        displacementMap: loadTexture(displacement),
+        map: await loadTexture(diffuse),
+        normalMap: await loadTexture(normal),
+        aoMap: await loadTexture(ao),
+        roughnessMap: await loadTexture(rough),
+        displacementMap: await loadTexture(displacement),
         aoMapIntensity: 1.0,
         side: THREE.FrontSide
     });
 
-    // 如果使用位移纹理，还需要配置材质以适应位移效果
     if (displacement) {
-        material.displacementScale = 0.001; // 根据需要调整位移比例
+        material.displacementScale = 0.001;
     }
-    
-    
-
     return material;
 }
+
 
 /**
  * 创建MTL格式的材质
@@ -88,37 +80,36 @@ function createMTLMaterial(mtlUrl) {
             reject(error);
         });
     });
-
 }
 
 /**
  * 创建并返回一个包含多种材质的对象
  * @returns {object} 材质对象集合
  */
-function createMaterials() {
+async function createMaterials() {
     return {
-        roadForPeople: createComplexMaterial({
+        roadForPeople:await createComplexMaterial({
             diffuse: 'textures/brickPaveMent/brick_pavement_diff.jpg',
             normal: 'textures/brickPaveMent/brick_pavement_nor_gl.jpg',
             ao: 'textures/brickPaveMent/brick_pavement_ao.jpg',
             rough: 'textures/brickPaveMent/brick_pavement_rough.jpg',
             displacement: 'textures/brickPaveMent/brick_pavement_disp.jpg'
         }),
-        roadForVehicles: createComplexMaterial({
+        roadForVehicles:await createComplexMaterial({
             diffuse: 'textures/road/road_diff.jpg',
             normal: 'textures/road/road_nor_gl.jpg',
             ao: 'textures/road/road_ao.jpg',
             rough: 'textures/road/road_rough.jpg',
             displacement: 'textures/road/road_disp.jpg'
         }),
-        roadSide: createComplexMaterial({
+        roadSide:await createComplexMaterial({
             diffuse: 'textures/roadSide/roadside_diff.jpg',
             normal: 'textures/roadSide/roadside_nor_gl.jpg',
             ao: 'textures/roadSide/roadside_ao.jpg',
             rough: 'textures/roadSide/roadside_rough.jpg',
             displacement: 'textures/roadSide/roadside_disp.jpg'
         }),
-        grass: createComplexMaterial({
+        grass:await createComplexMaterial({
             diffuse: 'textures/grass/grass_diff.jpg',
             normal: 'textures/grass/grass_nor_gl.jpg',
             ao: 'textures/grass/grass_ao.jpg',
@@ -126,7 +117,7 @@ function createMaterials() {
             displacement: 'textures/grass/grass_disp.jpg'
 
         }),
-        stairs: createComplexMaterial({
+        stairs:await createComplexMaterial({
             diffuse: 'textures/stair/stair_diff.jpg',
             normal: 'textures/stair/stair_nor_gl.jpg',
             ao: 'textures/stair/stair_ao.jpg',
@@ -134,7 +125,7 @@ function createMaterials() {
             displacement: 'textures/stair/stair_disp.jpg'
 
         }),
-        barrier: createComplexMaterial({
+        barrier:await createComplexMaterial({
             diffuse: 'textures/barrier/barrier_diff.jpg',
             normal: 'textures/barrier/barrier_nor_gl.jpg',
             ao: 'textures/barrier/barrier_ao.jpg',
@@ -142,10 +133,6 @@ function createMaterials() {
             displacement: 'textures/barrier/barrier_disp.jpg'
 
         }),
-        bicycle: createMTLMaterial('/sceneModels/bike/bikered.mtl'),
-
-
-
     };
 }
 
