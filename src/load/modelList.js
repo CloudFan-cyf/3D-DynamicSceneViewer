@@ -4,10 +4,9 @@ const MODELS_DATA = [
     {
         type: 'gltf',
         name: 'tree',
-        url: '/sceneModels/gltfTree/mytree.gltf',
+        url: '/sceneModels/gltfTree/mytree_1.gltf',
         enable: true,
         instances: [
-            { position: { x: 0, y: 0, z: 0 }, rotation: { x: Math.PI * -.5, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } },
             { position: { x: -5.1, y: 0, z: 7.46 }, rotation: { x: Math.PI * -.5, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } }
         ],
         
@@ -18,7 +17,7 @@ const MODELS_DATA = [
         url: '/sceneModels/bike/bike.gltf',
         enable: true,
         instances: [
-            { position: { x: 15, y: 0, z: 0 }, rotation: { x: Math.PI * -.5, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } },
+            { position: { x: 0, y: 0, z: 0 }, rotation: { x: Math.PI * -.5, y: Math.PI * -.5, z: 0 }, scale: { x: 1, y: 1, z: 1 } },
         ],
     },
     {
@@ -102,8 +101,8 @@ const MODELS_DATA = [
     },
     {
         type: 'obj',
-        name: 'grass',
-        url: '/sceneModels/tree.obj',
+        name: 'roof',
+        url: '/sceneModels/roof.obj',
         enable: true,
         instances: [
             {
@@ -114,19 +113,32 @@ const MODELS_DATA = [
         ],
     },
     {
-        type: 'complex_obj',
-        name: 'bicycle',
-        url: '/sceneModels/bike/bikered.obj',
+        type: 'obj',
+        name: 'concrete',
+        url: '/sceneModels/concrete.obj',
         enable: true,
         instances: [
             {
-                position: { x: 15, y: 0, z: 0 },
+                position: { x: 0, y: 0, z: 0 },
                 rotation: { x: Math.PI * -.5, y: 0, z: 0 },
                 scale: { x: 1, y: 1, z: 1 },
             },
         ],
-        
+
     },
+    {
+        type: 'obj',
+        name: 'building',
+        url: '/sceneModels/building.obj',
+        enable: true,
+        instances: [
+            {
+                position: { x: 0, y: 0, z: 0 },
+                rotation: { x: Math.PI * -.5, y: 0, z: 0 },
+                scale: { x: 1, y: 1, z: 1 },
+            },
+        ],
+    }
     // 更多模型可以添加到这个数组
 ];
 

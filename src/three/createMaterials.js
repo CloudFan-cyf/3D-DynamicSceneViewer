@@ -7,22 +7,24 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
  * @param {function} onLoad 可选的加载成功后的回调函数
  * @returns {THREE.Texture} 纹理对象
  */
-function loadTexture(path) {
+function loadTexture(path,repeatx,repeaty) {
     const loader = new THREE.TextureLoader();
     return new Promise((resolve, reject) => {
         loader.load(path, (texture) => {
-            // 成功加载纹理后的处理
+            console.log('Texture loaded successfully:', path);
             texture.wrapS = THREE.RepeatWrapping;
             texture.wrapT = THREE.RepeatWrapping;
-            texture.repeat.set(1, 1);
+            texture.repeat.set(repeatx, repeaty);
             texture.minFilter = THREE.LinearFilter;
             texture.magFilter = THREE.LinearFilter;
             resolve(texture);
         }, undefined, (error) => {
+            console.error('Error loading texture:', path, error);
             reject(error);
         });
     });
 }
+
 
 
 
@@ -37,15 +39,19 @@ async function createComplexMaterial(options) {
         normal = '',
         ao = '',
         rough = '',
-        displacement = ''
+        displacement = '',
+        mentalness = '',
+        repeatx = 1,
+        repeaty = 1,
     } = options;
 
     const material = new THREE.MeshStandardMaterial({
-        map: await loadTexture(diffuse),
-        normalMap: await loadTexture(normal),
-        aoMap: await loadTexture(ao),
-        roughnessMap: await loadTexture(rough),
-        displacementMap: await loadTexture(displacement),
+        map: diffuse ? await loadTexture(diffuse,repeatx,repeaty) : null,
+        normalMap: normal ? await loadTexture(normal,repeatx,repeaty) : null,
+        aoMap: ao ? await loadTexture(ao,repeatx,repeaty) : null,
+        roughnessMap: rough ? await loadTexture(rough,repeatx,repeaty) : null,
+        displacementMap: displacement ? await loadTexture(displacement,repeatx,repeaty) : null,
+        mentalnessMap: mentalness ? await loadTexture(mentalness,repeatx,repeaty) : null,
         aoMapIntensity: 1.0,
         side: THREE.FrontSide
     });
@@ -55,6 +61,7 @@ async function createComplexMaterial(options) {
     }
     return material;
 }
+
 
 
 /**
@@ -132,6 +139,31 @@ async function createMaterials() {
             rough: 'textures/barrier/barrier_rough.jpg',
             displacement: 'textures/barrier/barrier_disp.jpg'
 
+        }),
+        roof:await createComplexMaterial({
+            diffuse: 'textures/roof/roof_diff_1.jpg',
+            normal: 'textures/roof/roof_nor_gl.jpg',
+            ao: 'textures/roof/roof_ao.jpg',
+            rough: 'textures/roof/roof_rough.jpg',
+            displacement: 'textures/roof/roof_disp.jpg'
+
+        }),
+        concrete:await createComplexMaterial({
+            diffuse: 'textures/concrete/concrete_diff.jpg',
+            normal: 'textures/concrete/concrete_nor_gl.jpg',
+            ao: 'textures/concrete/concrete_ao.jpg',
+            rough: 'textures/concrete/concrete_rough.jpg',
+            displacement: 'textures/concrete/concrete_disp.jpg'
+
+        }),
+        building:await createComplexMaterial({
+            diffuse: 'textures/building/building_diff.jpg',
+            normal: 'textures/building/building_nor_gl.jpg',
+            mentalness: 'textures/building/building_mentalness.jpg',
+            rough: 'textures/building/building_rough.jpg',
+            displacement: 'textures/building/building_disp.jpg',
+            repeatx: 0.05,
+            repeaty: 0.1,
         }),
     };
 }
