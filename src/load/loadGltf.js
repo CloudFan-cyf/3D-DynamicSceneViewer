@@ -19,6 +19,12 @@ function loadGltf(model, scene) {
                 instance.position.copy(instanceData.position);
                 instance.rotation.set(instanceData.rotation.x, instanceData.rotation.y , instanceData.rotation.z);
                 //instance.scale.set(instanceData.scale.x, instanceData.scale.y, instanceData.scale.z);
+                instance.traverse((obj) => {
+                    if (obj.castShadow !== undefined) {
+                      obj.castShadow = true;
+                      obj.receiveShadow = true;
+                    }
+                });
                 scene.add(instance);
                 instances.push(instance);
             });

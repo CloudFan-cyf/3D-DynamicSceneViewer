@@ -60,6 +60,8 @@ function loadOSM(geojsonDataurl, centerLatitude, centerLongitude, scene,material
                     const geometry = new ExtrudeGeometry(shape, { depth: 15, bevelEnabled: false });
                     // 通过几何体和材质创建一个mesh对象
                     const mesh = new THREE.Mesh(geometry, material);
+                    mesh.castShadow = true;
+                    mesh.receiveShadow = true;
                     mesh.rotation.x = Math.PI / 2; // 绕X轴旋转90度，使mesh朝向正确
                     mesh.position.y = mesh.position.y + 15; // 调整高度，使mesh底部与地面平行
                     //mesh.rotation.y = -Math.PI; // 绕Y轴旋转180度，使mesh朝向正确

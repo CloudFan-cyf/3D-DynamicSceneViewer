@@ -30,6 +30,8 @@ function loadOBJ(url, position, rotation, scene, material) {
                 const mergedMesh = new THREE.Mesh(mergedGeometry, material);
                 mergedMesh.position.copy(position);
                 mergedMesh.rotation.set(rotation.x, rotation.y , rotation.z);
+                mergedMesh.receiveShadow = true;
+                mergedMesh.castShadow = true;
                 scene.add(mergedMesh);
                 resolve(mergedMesh);
             } else {
