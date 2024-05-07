@@ -25,10 +25,13 @@ function ModelViewer() {
             // loadManager 现在已经包含了初始化的材质
             try {
                 await loadManager.loadModels();
+                await loadManager.implementedLoadOSM();
+                await loadManager.implementedLoadSkyBox();
                 console.log('All models loaded successfully');
             } catch (error) {
                 console.error('Failed to load models:', error);
             }
+
 
             const uiManager = new UIManager(scene, camera, renderer);
             uiManager.initListeners();

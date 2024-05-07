@@ -17,7 +17,7 @@ function loadGltf(model, scene) {
             model.instances.forEach(instanceData => {
                 const instance = gltf.scene.clone();
                 instance.position.copy(instanceData.position);
-                instance.rotation.copy(instanceData.rotation);
+                instance.rotation.set(instanceData.rotation.x, instanceData.rotation.y , instanceData.rotation.z);
                 //instance.scale.set(instanceData.scale.x, instanceData.scale.y, instanceData.scale.z);
                 scene.add(instance);
                 instances.push(instance);

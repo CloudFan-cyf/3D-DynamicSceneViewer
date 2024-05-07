@@ -7,7 +7,7 @@ const MODELS_DATA = [
         url: '/sceneModels/gltfTree/mytree_1.gltf',
         enable: true,
         instances: [
-            { position: { x: -5.1, y: 0, z: 7.46 }, rotation: { x: Math.PI * -.5, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } }
+            { position: { x: -5.1, y: 0, z: 7.46 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } }
         ],
         
     },
@@ -17,7 +17,7 @@ const MODELS_DATA = [
         url: '/sceneModels/bike/bike.gltf',
         enable: true,
         instances: [
-            { position: { x: 0, y: 0, z: 0 }, rotation: { x: Math.PI * -.5, y: Math.PI * -.5, z: 0 }, scale: { x: 1, y: 1, z: 1 } },
+            { position: { x: 12, y: 0, z: 0 }, rotation: { x: 0, y: -Math.PI/2 , z: 0 }, scale: { x: 1, y: 1, z: 1 } },
         ],
     },
     {

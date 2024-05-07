@@ -2,6 +2,7 @@ import ClickPositionDisplay from './clickPositionDisplay.js';
 
 class UIManager {
     constructor(scene, camera, renderer) {
+        this.scene = scene;
         this.clickPositionDisplay = new ClickPositionDisplay(scene, camera, renderer); // 创建点击位置显示组件
         this.renderer = renderer;
     }

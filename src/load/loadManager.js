@@ -5,12 +5,20 @@ import loadGltf from './loadGltf';
 import loadComplexOBJ from './loadComplexOBJ';
 //import createMaterials from '../three/createMaterials';
 import MODELS_DATA from './modelList';
+import loadOSM from '../osm/loadOSM';
+import loadSkyBox from './loadSkyBox';
 
+
+// 场景原点的经纬度
+const originLatitude = 40.178579; // 纬度
+const originLongitude = 116.156975; // 经度
 class LoadManager {
     constructor(scene,materials) {
         this.scene = scene;
         this.materials = materials;
         this.models = MODELS_DATA; // 使用外部定义的模型数据
+        this.OSMurl = '/osm/export.geojson';
+        this.SkyBoxUrl = '/textures/skybox/skybox.jpg';
     }
 
     async loadModels() {
@@ -58,6 +66,12 @@ class LoadManager {
         })).catch(error => {
             console.error("One or more models failed to load.", error);
         });
+    }
+    async implementedLoadOSM() {
+        await loadOSM(this.OSMurl, originLatitude, originLongitude, this.scene,this.materials['building']);
+    }
+    async implementedLoadSkyBox() {
+        await loadSkyBox(this.SkyBoxUrl, this.scene);
     }
     
 }
