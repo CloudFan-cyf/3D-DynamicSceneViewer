@@ -16,7 +16,7 @@ class ClickPositionDisplay {
         document.body.appendChild(this.div);
         // 设置样式
         this.div.style.position = 'absolute';
-        this.div.style.top = '20px';
+        this.div.style.top = '80px';
         this.div.style.left = '20px';
         this.div.style.color = 'white';
         this.div.style.fontFamily = 'Arial';
@@ -24,7 +24,7 @@ class ClickPositionDisplay {
         this.div.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
         this.div.style.padding = '8px';
         this.div.style.borderRadius = '5px';
-        this.div.innerHTML = 'Click in the scene to get coordinates';
+        this.div.innerHTML = 'get coordinates';
     }
 
     updateCoordinates(event) {
