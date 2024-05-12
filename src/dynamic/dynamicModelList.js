@@ -72,8 +72,8 @@ const DYNAMIC_MODELS_DATA = [
                 scale: { x: 0.6, y: 0.6, z: 0.6 }
             },//正常行驶的车
             {
-                position: [3, 0, -1],
-                path: [[-3, 0, -1], [3, 0, -1], [5, 0, -3]],
+                position: [-5, 0, -1],
+                path: [[-5, 0, -1], [3, 0, -1], [5, 0, -3]],
                 speed: [[0, 5], [25, 5]],
                 rotation: { x: 0, y: -Math.PI / 2, z: 0 },
                 scale: { x: 0.6, y: 0.6, z: 0.6 }

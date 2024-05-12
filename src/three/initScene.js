@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {GUI} from 'three/examples/jsm/libs/lil-gui.module.min.js';
+//import {GUI} from 'three/examples/jsm/libs/lil-gui.module.min.js';
 /**
  * 初始化并返回一个 three.js 场景，包括相机和基础灯光配置。
  * @returns {object} 包含 scene, camera 和 renderer 的对象。

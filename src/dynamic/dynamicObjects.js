@@ -52,7 +52,7 @@ class DynamicObject {
                 this.mesh = gltf.scene;
                 this.mesh.position.copy(this.initialPosition);
 
-                //this.mesh.rotation.set(this.initialRotation.x, this.initialRotation.y, this.initialRotation.z);
+                this.mesh.rotation.set(this.initialRotation.x, this.initialRotation.y, this.initialRotation.z);
 
                 scene.add(this.mesh);
                 this.mesh.traverse(function (object) {
@@ -85,10 +85,23 @@ class DynamicObject {
     playAnimation(name) {
         if (this.currentAnimation !== name) {
             const action = this.animations[name];
-            this.mixer.stopAllAction();
+            if (this.mixer) {
+                this.mixer.stopAllAction();
+                this.mixer.time = 0;  // 重置动画时间
+            }
             action.play();
             this.currentAnimation = name;
         }
+    }
+
+    //重置进度和总时间
+    reset(){
+        this.progress = 0;
+        this.totalTime = 0;
+        this.mixer?.stopAllAction();  // 如果有动画混合器，停止所有动作
+        
+        this.mesh.position.copy(this.initialPosition);  // 重置到初始位置
+        this.mesh.rotation.set(this.initialRotation.x, this.initialRotation.y, this.initialRotation.z); // 重置到初始角度
     }
 
     update(deltaTime) {

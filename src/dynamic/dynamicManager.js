@@ -40,9 +40,17 @@ class DynamicManager {
             console.error('Error loading the dynamic object:', error);
         });
     }
-
+    //更新所有动态物体的位置和动画
     updateScene(deltaTime) {
         this.dynamicObjects.forEach(obj => obj.update(deltaTime));
+    }
+
+    //重置所有动态物体的动画
+    resetAnimations() {
+        console.log('Resetting all dynamic objects animations');
+        this.dynamicObjects.forEach(obj => {
+            obj.reset();
+        });
     }
 
     getDynamicObject(name) {
