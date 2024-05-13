@@ -11,26 +11,40 @@ function initScene() {
     // 设置背景颜色
     scene.background = new THREE.Color(0xaaaaaa);
 
-    // 构建创建相机的函数
-    function createCamera(fov, aspect, near, far) {
-        return new THREE.PerspectiveCamera(fov, aspect, near, far);
-    }
 
     // 创建相机
-    const camera = createCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 10, 0);  // 相机位置
-    camera.up.set(0, 1, 0);
+    //自由视角
+    const freeCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    freeCamera.position.set(0, 10, 0);  // 相机位置
+    freeCamera.up.set(0, 1, 0);
+
+    // 第一人称视角摄像机
+    const firstPersonCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.7, 1000);
+    firstPersonCamera.up.set(0, 1, 0);
+    // 初始位置将在更新函数中根据动态物体位置设置
+
+    // 第三人称越肩视角摄像机
+    const thirdPersonCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    thirdPersonCamera.up.set(0, 1, 0);
+    // 初始位置将在更新函数中根据动态物体位置设置
+
+    // 场景摄像头视角
+    const fixedCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    fixedCamera.position.set(10, 10, 10); // 用户可设定的位置
+    fixedCamera.up.set(0, 1, 0);
+    fixedCamera.lookAt(0,0,0);
+
 
     // 创建渲染器
     const renderer = new THREE.WebGLRenderer({
         antialias: true,
         alpha: true,
-      });
+    });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.physicallyCorrectLights = true;
     //renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.shadowMap.enabled = true;
-    
+
     //添加地面
     const planeGeometry = new THREE.PlaneGeometry(1000, 1000);  // 大小根据实际需求调整
     const planeMaterial = new THREE.MeshPhongMaterial({ color: 0xaaaaaa });  // 可以用纹理替换颜色
@@ -57,7 +71,7 @@ function initScene() {
     scene.add(directionalLight);
 
     // 返回 scene, camera 和 renderer
-    return { scene, camera, renderer };
+    return { scene, freeCamera, firstPersonCamera, thirdPersonCamera, fixedCamera, renderer };
 }
 
 export default initScene;

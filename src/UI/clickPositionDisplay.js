@@ -1,30 +1,36 @@
 import * as THREE from 'three';
 
 class ClickPositionDisplay {
+    static instance = null;
     constructor(scene, camera, renderer) {
+        if(ClickPositionDisplay.instance) {
+            return ClickPositionDisplay.instance;
+        }
+        ClickPositionDisplay.instance = this;
         this.scene = scene;          // 3D场景对象
         this.camera = camera;        // 3D场景中的相机
         this.renderer = renderer;    // 渲染器
         this.raycaster = new THREE.Raycaster(); // 射线投射器，用于确定鼠标点击的3D位置
         this.mouse = new THREE.Vector2();       // 保存鼠标点击的二维坐标
-        this.initUI();               // 初始化显示坐标的HTML元素
+        this.point = new THREE.Vector3(0, 0, 0);       // 保存射线与场景中对象的交点坐标
+        this.observers = [];
     }
 
-    initUI() {
-        // 创建一个新的div元素并添加到文档中
-        this.div = document.createElement('div');
-        document.body.appendChild(this.div);
-        // 设置样式
-        this.div.style.position = 'absolute';
-        this.div.style.top = '80px';
-        this.div.style.left = '20px';
-        this.div.style.color = 'white';
-        this.div.style.fontFamily = 'Arial';
-        this.div.style.fontSize = '14px';
-        this.div.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-        this.div.style.padding = '8px';
-        this.div.style.borderRadius = '5px';
-        this.div.innerHTML = 'get coordinates';
+    static async getInstance(){
+        if(ClickPositionDisplay.instance) {
+            return ClickPositionDisplay.instance;
+        }
+        else {
+            return new Promise((resolve, reject) => {
+                const waitInterval = setInterval(() => {
+                    if (ClickPositionDisplay.instance) {
+                        clearInterval(waitInterval);
+                        console.log("get ClickPositionDisplay instance successfully.");
+                        resolve(ClickPositionDisplay.instance);
+                    }
+                }, 100); // 每100毫秒检查一次'
+            });
+        }
     }
 
     updateCoordinates(event) {
@@ -38,10 +44,25 @@ class ClickPositionDisplay {
 
         if (intersects.length > 0) {
             // 获取第一个交点的坐标
-            const { x, y, z } = intersects[0].point;
-            // 更新显示的坐标
-            this.div.innerHTML = `Coordinates: x=${x.toFixed(2)}, y=${y.toFixed(2)}, z=${z.toFixed(2)}`;
+            
+            this.point = intersects[0].point;
+            //console.log(this.point);
         }
+    }
+
+    subscribe(observerFunction) {
+        this.observers.push(observerFunction);
+
+    }
+
+    unsubscribe(observerFunction) {
+        this.observers = this.observers.filter(observer => observer !== observerFunction);
+    }
+
+    notifyObservers() {
+        this.observers.forEach(observer => {
+            observer(this.point);
+        });
     }
 }
 

@@ -11,7 +11,7 @@ function loadTexture(path,repeatx,repeaty) {
     const loader = new THREE.TextureLoader();
     return new Promise((resolve, reject) => {
         loader.load(path, (texture) => {
-            console.log('Texture loaded successfully:', path);
+            //console.log('Texture loaded successfully:', path);
             texture.wrapS = THREE.RepeatWrapping;
             texture.wrapT = THREE.RepeatWrapping;
             texture.repeat.set(repeatx, repeaty);

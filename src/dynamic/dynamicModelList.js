@@ -9,7 +9,7 @@ const DYNAMIC_MODELS_DATA = [
         enable: true,
         instances: [
             {
-                instanceName: 'user1',
+                instanceName: 'user',
                 position: [6.5, 0, 3.2],
                 path: [[6.5, 0, 3.2], [6.5, 0, 0], [6.5, 0, -5]],
                 speed: [[0, 1], [1, 0.5], [2, 1], [10, 0],[11,0] ,[12,0],[13,0],[14, 0], [15, 0], [16, 1], [30, 0]],

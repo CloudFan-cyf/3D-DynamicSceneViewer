@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 // 地球半径，单位：米
 const EARTH_RADIUS = 6371000;
 

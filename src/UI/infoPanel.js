@@ -26,7 +26,7 @@ function InfoPanel() {
         DynamicManager.getInstance().then(manager => {
             if (isActive) {
                 manager.subscribe(setDynamicObjects);
-                manager.comfirm();
+                //manager.comfirm();
 
                 // 清理函数
                 return () => {
@@ -37,6 +37,7 @@ function InfoPanel() {
 
         const updateFrame = () => {
             setFrame(prev => prev + 1); // 在动画帧中更新状态以强制重新渲染
+           // console.log('updateFrame', frame);
             requestAnimationFrame(updateFrame);
         };
 
