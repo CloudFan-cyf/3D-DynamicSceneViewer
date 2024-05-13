@@ -1,13 +1,17 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { temp } from 'three/examples/jsm/nodes/Nodes.js';
 
 class DynamicObject {
-    constructor(modelName, modelUrl, initialPosition, pathPoints, rotation, speedPoints, skeleton_enable) {
+    constructor(modelType,modelName, modelUrl, instanceName, initialPosition, pathPoints, rotation, speedPoints, skeleton_enable) {
+        this.modelType = modelType;
         this.modelName = modelName;
         this.modelUrl = modelUrl;
+        this.instanceName = instanceName;
         this.initialPosition = new THREE.Vector3(...initialPosition);
         this.initialRotation = rotation;
         this.pathPoints = pathPoints.map(p => new THREE.Vector3(...p));
+        this.currentPosition = new THREE.Vector3(...initialPosition); // 当前位置
         this.speedPoints = speedPoints.map(p => new THREE.Vector2(...p));  // 时间节点对应的速度
         this.speed = 0; // 当前速度，由速度曲线决定
         this.mesh = null;
@@ -32,7 +36,6 @@ class DynamicObject {
         this.curve.curveType = 'catmullrom';
         this.curve.tension = 0.5;
         this.curveLength = this.curve.getLength();
-        console.log(`${this.modelName} :Curve length: ${this.curveLength}`);
     }
 
     //for   debug
@@ -80,26 +83,34 @@ class DynamicObject {
         });
     }
 
-    // 用于控制动画的函数，在特定事件触发时调用
+    // 用于控制动画的函数，在特定事件触发时调用。仅用于播放骨骼动画
     //请注意：如果动画名称不正确，则不会播放动画，在blender中创建时必须确定好动画名称
     playAnimation(name) {
         if (this.currentAnimation !== name) {
             const action = this.animations[name];
-            if (this.mixer) {
-                this.mixer.stopAllAction();
-                this.mixer.time = 0;  // 重置动画时间
-            }
+            this.mixer.stopAllAction();
             action.play();
             this.currentAnimation = name;
         }
     }
 
     //重置进度和总时间
-    reset(){
+    reset() {
         this.progress = 0;
         this.totalTime = 0;
-        this.mixer?.stopAllAction();  // 如果有动画混合器，停止所有动作
-        
+        if (this.mixer) {
+            //this.mixer.stopAllAction();
+            this.mixer.time = 0;
+            if (this.skeleton_enable) {
+                this.playAnimation('idle');
+            }
+            else {
+                this.animations.forEach(action => {
+                    action.play();
+                });
+            }
+
+        }
         this.mesh.position.copy(this.initialPosition);  // 重置到初始位置
         this.mesh.rotation.set(this.initialRotation.x, this.initialRotation.y, this.initialRotation.z); // 重置到初始角度
     }
@@ -117,12 +128,17 @@ class DynamicObject {
 
                 // 更新进度
                 this.totalTime += deltaTime; // 总时间累计
-                this.speed = this.speedCurve.getPoint(this.totalTime / this.speedCurve.getLength()).y; // 根据当前总时间获取速度
+                let tempspeed =this.speedCurve.getPoint(this.totalTime / this.speedCurve.getPoint(1).x).y; // 根据当前总时间获取速度
+                if(tempspeed < 0.01){
+                    tempspeed = 0;
+                }
+                this.speed = tempspeed; // 更新速度
                 this.progress += (deltaTime * this.speed) / this.curveLength;
                 this.progress = Math.min(this.progress, 1); // 限制进度在0-1之间
 
                 // 计算当前进度的位置
                 position = this.curve.getPoint(this.progress);
+                this.currentPosition.copy(position); // 记录当前位置
                 nextPosition = this.curve.getPoint(Math.min(this.progress + 0.001, 1));
                 if (this.skeleton_enable) {
                     //console.log(`Speed at progress ${this.progress}: ${this.speed}`);
@@ -132,45 +148,46 @@ class DynamicObject {
                         this.playAnimation('idle'); // 否则播放闲置动画
                     }
                 }
+                else {
+                    this.animations.forEach(action => {
+                        action.play();
+                    });
+                }
+
 
                 this.mesh.position.copy(position);
 
-                // 计算方向并旋转模型
+                //计算方向并旋转模型
                 if (this.progress < 1) {
                     direction = nextPosition.clone().sub(position).normalize();
                     angle = Math.atan2(direction.x, direction.z);
                     this.mesh.rotation.y = -Math.PI + angle;// 根据方向旋转Y轴
                 }
-                else {
-                    //this.mesh.rotation.y = -Math.PI + angle;// 根据方向旋转Y轴
-                }
 
             }
             else {
                 // 路径结束，停止动画
-                //this.mesh.rotation.y = -Math.PI + angle; // 根据方向旋转Y轴
-                if(this.skeleton_enable){
+                if (this.skeleton_enable) {
                     //console.log('stop animation')
                     if (this.mixer) {
                         this.mixer.update(deltaTime);
                     }
-        
                     this.playAnimation('idle');
-    
+
                 }
             }
         }
         else {
             //没有路径，不更新位置，只更新动画
-            if(this.skeleton_enable){
+            this.currentPosition.copy(this.initialPosition);
+            if (this.skeleton_enable) {
                 if (this.mixer) {
                     this.mixer.update(deltaTime);
                 }
-    
-                this.playAnimation('idle');
 
+                this.playAnimation('idle');
             }
-            
+
 
 
         }
