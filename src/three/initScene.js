@@ -19,8 +19,9 @@ function initScene() {
     freeCamera.up.set(0, 1, 0);
 
     // 第一人称视角摄像机
-    const firstPersonCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.7, 1000);
+    const firstPersonCamera = new THREE.PerspectiveCamera(50, (window.innerWidth / window.innerHeight), 0.1, 100);
     firstPersonCamera.up.set(0, 1, 0);
+    //setCustomViewOffset(firstPersonCamera);  // 设置自定义视野大小
     // 初始位置将在更新函数中根据动态物体位置设置
 
     // 第三人称越肩视角摄像机
@@ -30,9 +31,9 @@ function initScene() {
 
     // 场景摄像头视角
     const fixedCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    fixedCamera.position.set(10, 10, 10); // 用户可设定的位置
+    fixedCamera.position.set(-13.323, 10, 8.001); // 用户可设定的位置
     fixedCamera.up.set(0, 1, 0);
-    fixedCamera.lookAt(0,0,0);
+    fixedCamera.lookAt(0,-7,0);
 
 
     // 创建渲染器
@@ -72,6 +73,20 @@ function initScene() {
 
     // 返回 scene, camera 和 renderer
     return { scene, freeCamera, firstPersonCamera, thirdPersonCamera, fixedCamera, renderer };
+}
+
+function setCustomViewOffset(camera) {
+    const fullWidth = window.innerWidth;
+    const fullHeight = window.innerHeight;
+    const width = fullWidth;  // 定义视图宽度
+    const height = fullHeight; // 定义视图高度
+    const offsetX = fullWidth*2 / 5; // x 偏移
+    const offsetY = 0; // y 偏移
+
+    camera.setViewOffset(fullWidth, fullHeight, offsetX, offsetY, width, height);
+    //camera.aspect = height*3 / width;
+
+    camera.updateProjectionMatrix();
 }
 
 export default initScene;

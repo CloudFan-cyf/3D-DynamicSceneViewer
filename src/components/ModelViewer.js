@@ -6,12 +6,14 @@ import initScene from '../three/initScene';
 import initCameraControls from '../three/cameraControl';
 
 import ClickPositionDisplay from '../UI/clickPositionDisplay';
-
+import addCameraFrustumToScene from '../UI/frustumUI';
 import AnimationPlayControl from '../UI/animationPlayCtrl';
 import InfoPanel from '../UI/infoPanel';
 import VideoPlayerCard from '../UI/videoPlayerCard';
 import CameraSwitcher from '../UI/cameraSwitcher';
 import CoordinatesCard from '../UI/coordinatesCard';
+import ToggleVisibilityButton from '../UI/toggleFrustumVisible';
+
 import Box from '@mui/material/Box';
 
 
@@ -21,6 +23,7 @@ import createMaterials from '../three/createMaterials';
 import DynamicManager from '../dynamic/dynamicManager';
 import timeManager from './timeManager';
 import { PLYExporter } from 'three-stdlib';
+
 
 
 
@@ -35,6 +38,8 @@ dynamicManager.notifyObservers();
 const clickPositionDisplay = new ClickPositionDisplay(scene, freeCamera, renderer);
 
 let activeCamera = freeCamera, activeCameraType = 'freeCamera';
+const fpvFrustm = addCameraFrustumToScene(firstPersonCamera, scene);
+
 
 //创建相机控制器
 function switchCamera(cameraType) {
@@ -67,9 +72,14 @@ function updateCamera() {
     if (dynamicManager) {
         if (activeCameraType === 'firstPerson') {
             hero.mesh.visible = false;
+            fpvFrustm.frustumMesh.visible = false;
+            fpvFrustm.edgesMesh.visible = false;
+
         }
         else {
             hero.mesh.visible = true;
+            fpvFrustm.frustumMesh.visible = true;
+            fpvFrustm.edgesMesh.visible = true;
         }
         // 更新第一人称摄像机位置和方向
         const fpvPositionOffset = new THREE.Vector3(0, 1.6, 0);
@@ -77,12 +87,15 @@ function updateCamera() {
         firstPersonCamera.rotation.copy(hero.mesh.rotation);
 
         // 更新第三人称摄像机位置和方向
-        const positionOffset = new THREE.Vector3(0, 2, -5); // 后上方位置偏移
-        const targetOffset = new THREE.Vector3(0, 0, 0);
-        thirdPersonCamera.position.copy(hero.currentPosition).add(positionOffset);
-        thirdPersonCamera.lookAt(hero.currentPosition);
+        const relativCameraOffset = new THREE.Vector3(0, 3, 2); // 后上方位置偏移
+        const targetCameraPosition = relativCameraOffset.applyMatrix4(hero.mesh.matrixWorld);
+        const targetOffset = new THREE.Vector3(0, 1.5, 0);
+        const realTargetPosition = hero.currentPosition.clone().add(targetOffset);
+        thirdPersonCamera.position.set(targetCameraPosition.x, targetCameraPosition.y, targetCameraPosition.z);
+        thirdPersonCamera.lookAt(realTargetPosition);
     }
 }
+
 
 
 function ModelViewer() {
@@ -145,11 +158,13 @@ function ModelViewer() {
             window.addEventListener('resize', onWindowResize);
             renderer.domElement.addEventListener('click', (event) => clickPositionDisplay.updateCoordinates(event));
             const controls = initCameraControls(activeCamera, renderer);
+           
 
 
             const animate = (time) => {
                 requestAnimationFrame(animate);
                 clickPositionDisplay.notifyObservers();
+                
 
                 const deltaTime = timeManager.update(time);
 
@@ -157,6 +172,10 @@ function ModelViewer() {
                     controls.update();
                 }
                 updateCamera(); // 更新摄像机位置和方向
+                fpvFrustm.frustumMesh.position.copy(firstPersonCamera.position);
+                fpvFrustm.frustumMesh.quaternion.copy(firstPersonCamera.quaternion);
+                fpvFrustm.edgesMesh.position.copy(firstPersonCamera.position);
+                fpvFrustm.edgesMesh.quaternion.copy(firstPersonCamera.quaternion);
 
                 if (playingRef.current) {
                     //console.log('update animations');
@@ -235,6 +254,10 @@ function ModelViewer() {
                 />
 
             }
+            
+
+            
+
         </div>
     );
 }
