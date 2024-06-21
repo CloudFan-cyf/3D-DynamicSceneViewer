@@ -1,70 +1,100 @@
-# Getting Started with Create React App
+# 3D Dynamic Scene Viewer
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 项目概述
 
-## Available Scripts
+3D Dynamic Scene Viewer 是一个基于 Three.js 和 React 的 Web 应用程序，用于展示包含静态和动态物体的3D场景。项目中包括了静态建筑物、动态行人和车辆等模型，并支持控制动画的播放和暂停。此应用旨在提供一个互动式3D环境展示，适用于智慧城市管理等应用场景。
 
-In the project directory, you can run:
+### 功能特点
 
-### `npm start`
+- **静态模型加载**：支持加载 OBJ 和 GLTF 格式的静态模型，并附加相应材质。
+- **动态物体管理**：支持加载具有骨骼动画的 GLTF 格式的动态模型，并根据路径和速度进行移动。（但移动的路径逻辑目前还有问题，暂未修复）
+- **动画控制**：提供播放、暂停和重启动画的功能。
+- **视频同步**：和录制的视频同步播放/暂停动画，并将视频以卡片形式展示在画面右侧。
+- **地图导入**：支持从 OpenStreetMap (OSM) 导入建筑物和道路的地理数据，并生成对应的3D几何体。
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 安装和使用
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 环境依赖
 
-### `npm test`
+确保你的系统中已安装以下软件：
+- Node.js (推荐版本 14 及以上)
+- npm (Node 包管理器)
+在项目文件夹需安装以下库(可在npm网站找到安装指令)
+- three.js(本项目使用的3D库)
+- mui (本项目使用的UI库)
+### 运行项目
+在项目文件夹右键打开git bash，然后输入：
+```
+npm start
+```
+启动项目。项目启动后，打开浏览器并访问 `http://localhost:3000`，你将看到3D Dynamic Scene Viewer的界面。
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 使用说明
+### 添加静态模型
+在 `src/load/staticModelList.js` 中，按如下格式在`MODELS_DATA`中添加模型信息：
+```
+const MODELS_DATA = [
+    {
+        type: 'obj',//指明模型的类型是`obj`或`gltf`
+        name: 'building',//模型名称
+        url: '/path/to/building.obj',//模型路径，请将模型放在/public/sceneModels中
+        enable: true,//是否导入模型
+        instances: [//模型的各个实例位置、旋转和缩放
+            {
+                position: { x: 0, y: 0, z: 0 },
+                rotation: { x: 0, y: 0, z: 0 },
+                scale: { x: 1, y: 1, z: 1 },
+            },
+        ],
+    },
+    // 更多模型...
+];
+```
 
-### `npm run build`
+### 添加动态物体
+动态物体的添加只支持gltf格式。在 `src/dynamic/dynamicModelList.js` 中，按如下格式添加动态物体信息：
+```
+const DYNAMIC_MODELS_DATA = [
+    {
+        type: 'Human',//动态物体类型，主要用于区分人类和车辆。目前可支持设置'Human'和'Vehicle'两种类型
+        modelname: 'pedestrians',
+        url: '/sceneModels/people/pedestrains.glb',
+        skeleton_enable: true,//是否启用骨骼动画
+        enable: true,
+        instances: [
+            {
+                instanceName: 'pedestrian1',//动态物体实例名称，可用此名称获取动态物体对象
+                position: [9, 0, -2.813],
+                path: [[9.490, 0, -2.813], [9.490, 0, -2.813]],//动态物体轨迹点，将根据这些轨迹点生成一条样条曲线作为动态物体的轨迹
+                speed: [[0, 0], [10, 0], [30, 0]],//动态物体速度曲线，x为时间，y为速度，将根据此速度关键点生成一条SplineCurve作为物体的速度曲线
+                rotation: { x: 0, y: Math.PI, z: 0 },
+                scale: { x: 1, y: 1, z: 1 }
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+            },
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+        ],
+    },
+    // 更多动态物体...
+];
+```
+### 控制动画播放
+在界面左下角有播放和重启动画的按钮，点击可以控制动画的播放、暂停和重启。右边的视频播放将随动画一同被控制。
 
-### `npm run eject`
+### 设置使用独显渲染
+本项目使用了大量的精细贴图和外部模型，使用集成显卡渲染会导致帧率过低，请使用独立显卡进行渲染。Win10系统中配置浏览器以使用独显渲染的方法如下(前提是你的电脑有独立显卡)：
+- 打开设置 → 系统 → 屏幕 → 图形设置 → 设置图形性能首选项 → 将你使用的浏览器的首选项设置为“高性能”(例如使用edge浏览器，请点击“浏览”后找到edge的文件位置，如`C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`）
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 问题与TODOs
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+目前本项目只实现了一个初步的演示功能，仍存在以下问题等待修复和解决：
++ 动态物体的轨迹和速度控制逻辑并不完善，存在同步问题，这将会导致动态物体移动异常，在轨迹点和速度点定义不佳的情况下会导致程序崩溃。
++ 动态物体的轨迹和实测不符。由于只实现了初步的演示，其中动态物体的移动并未和视频中完全一致。需要寻找一个合适的将动态物体移动和视频精确同步的方法。
++ 算法接口。目前动态物体的轨迹是静态地在列表中定义的，并未提供后台算法接口以接收实时的轨迹数据。
++ 兼容性。由于使用了大量的高级贴图和模型，本项目需要使用独立显卡进行渲染（设置方式已在上文给出）。这导致本项目的兼容性不足，无法在配置不足的机器上运行。
++ 环境配置问题。需要将该系统容器化以便于部署
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
